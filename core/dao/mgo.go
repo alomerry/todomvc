@@ -39,3 +39,4 @@ func (repo *mongoDBRepository) FindOne(collectionName string, selector bson.M, r
 func (repo *mongoDBRepository) InsertOne(collectionName string, selector bson.M) error {
 	return repo.db.C(collectionName).Insert(&selector)
 }
+

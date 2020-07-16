@@ -1,5 +1,5 @@
 UserName = "alomerry"
-Password = "wjc120211"
+Password = "120211"
 IpHost = "127.0.0.1"
 Port = "27017"
 DbName = "todo"
