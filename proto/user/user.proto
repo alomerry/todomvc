@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package proto.user;
+
+option go_package = "user";
+
+message UserInfo{
+  string id = 1;
+  string name = 2;
+}
+
+message UserInfoRequest{
+  string id = 1;
+  string accessToken = 2;
+}
+
+message UserInfoResponse{
+  string id = 1;
+  string name = 2;
+  string password = 3;
+}
+
+message UserCredential {
+  string username = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  string id = 1;
+  string accessToken = 2;
+  UserInfo user = 3;
+}
+
+message RegisterCredential {
+  string name = 1;
+  string password = 2;
+  string repeatPassword = 3;
+}
+
+message RegisterResponse {
+  string id = 1;
+  string accessToken = 2;
+}
+
+

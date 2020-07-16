@@ -1,0 +1,5 @@
+syntax = "proto3";
+
+package proto.todo;
+
+option go_package = "todo";

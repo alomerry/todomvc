@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package proto.user;
+
+option go_package = "user";
+
+import "user/user.proto";
+
+service UserService {
+
+  rpc Login(UserCredential) returns (LoginResponse);
+
+  rpc Register(RegisterCredential) returns (RegisterResponse);
+}
