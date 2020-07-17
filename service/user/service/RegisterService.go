@@ -3,7 +3,6 @@ package service
 import (
 	"golang.org/x/net/context"
 	"gopkg.in/mgo.v2/bson"
-	"log"
 	"todomvc/core/dao"
 	"todomvc/core/errors"
 	"todomvc/core/utils"
@@ -17,19 +16,20 @@ func (*UserService) Register(ctx context.Context, credential *user.RegisterCrede
 		return nil, errors.RPCError{Code: codes.TwoPasswordMismatch, Desc: "两次密码不一致！"}
 	}
 	var result model.User
-	if err := dao.DB.FindOne("user", bson.M{"name": credential.Name}, result); err == nil {
+	if err := dao.DB.FindOne("user", bson.M{"name": credential.Name}, result); err != nil {
 		return nil, errors.RPCError{Code: codes.UserNameExist, Desc: "用户名已存在！"}
 	}
 	if err := dao.DB.InsertOne("user", bson.M{"name": credential.Name, "password": credential.Password}); err != nil {
-		log.Fatal(err)
+		panic(err)
 		return nil, err
 	}
 	if err := dao.DB.FindOne("user", bson.M{"name": credential.Name, "password": credential.Password}, &result); err != nil {
-		log.Fatal(err)
+		panic(err)
 		return nil, err
 	}
+
 	return &user.RegisterResponse{
 		Id:          result.Id.Hex(),
-		AccessToken: utils.MakeToken(result.Id.Hex(), result.Name),
+		AccessToken: utils.MakeJWT(result.Id.Hex(), result.Name),
 	}, nil
 }

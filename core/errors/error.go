@@ -11,6 +11,5 @@ type RPCError struct {
 }
 
 func (rpcError RPCError) Error() string {
-	msg := fmt.Sprint("%s,%s", rpcError.Code, rpcError.Desc)
-	return msg
+	return fmt.Sprintf(rpcError.Desc)
 }

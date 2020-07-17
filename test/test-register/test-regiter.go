@@ -1,8 +1,8 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"log"
 	"todomvc/proto/user"
@@ -14,10 +14,11 @@ func main() {
 		log.Fatal(err)
 	}
 	defer conn.Close()
-	loginClient := user.NewUserServiceClient(conn)
-	reply, err := loginClient.Login(context.Background(), &user.UserCredential{
-		Name:     "alomerry",
-		Password: "120211",
+	registerClient := user.NewUserServiceClient(conn)
+	reply, err := registerClient.Register(context.Background(), &user.RegisterCredential{
+		Name:           "alomerry",
+		Password:       "120211",
+		RepeatPassword: "120211",
 	})
 	if err != nil {
 		panic(err)

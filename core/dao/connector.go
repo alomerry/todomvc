@@ -1,10 +1,9 @@
 package dao
 
 import (
-	"fmt"
 	"gopkg.in/mgo.v2"
 	"sync"
-	"todomvc/core/codes"
+	"todomvc/core/constant"
 	"todomvc/core/utils"
 )
 
@@ -26,27 +25,23 @@ func GetSession() *mgo.Session {
 	return dbSession
 }
 
-func InitWithDBConf() (*mgo.Session, error) {
-	return initConection(utils.GetConfItem(&cfg, "DbName"))
-}
-
 func InitAndAuthenticate() (*mgo.Session, error) {
 	return initConection("admin")
 }
 
 func initConection(dbName string) (*mgo.Session, error) {
-	utils.Config(&once, &cfg, codes.TodoConf)
-	dialInfo, err := mgo.ParseURL(utils.GetConfItem(&cfg, "IpHost") + ":" + utils.GetConfItem(&cfg, "Port"))
+	utils.Config(&once, &cfg, constant.TodoConf)
+	dialInfo, err := mgo.ParseURL(cfg.IpHost + ":" + cfg.Port)
 	if err != nil {
 		return nil, err
 	}
 	dialInfo.Database = dbName
-	dialInfo.Username = utils.GetConfItem(&cfg, "UserName");
-	dialInfo.Password = utils.GetConfItem(&cfg, "Password");
-	fmt.Printf("%s,%s,%s",dialInfo.Username,dialInfo.Password)
+	dialInfo.Username = cfg.UserName
+	dialInfo.Password = cfg.Password
 	dbSession, err := mgo.DialWithInfo(dialInfo)
 	if err != nil {
 		return nil, err
 	}
+	dbSession = dbSession.DB(cfg.DbName).Session
 	return dbSession, err
 }

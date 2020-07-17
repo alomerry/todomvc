@@ -1,26 +1,48 @@
 package service
 
 import (
+	"fmt"
 	"golang.org/x/net/context"
 	"gopkg.in/mgo.v2/bson"
-	"log"
 	"todomvc/core/dao"
+	"todomvc/core/errors"
 	"todomvc/core/utils"
+	"todomvc/service/user/codes"
 	"todomvc/service/user/model"
 )
 import "todomvc/proto/user"
 
 func (*UserService) Login(ctx context.Context, userCredential *user.UserCredential) (*user.LoginResponse, error) {
+	// todo 验证数据长度等等
+
 	var result model.User
+	fmt.Printf("name:%s,password:%s", userCredential.Name, userCredential.Password)
+	if err := dao.DB.FindOne("user", bson.M{"name": userCredential.Name}, &result); err != nil {
+		return nil, errors.RPCError{Code: codes.UserNotFound, Desc: "用户不存在！"}
+	}
 	if err := dao.DB.FindOne("user", bson.M{"name": userCredential.Name, "password": userCredential.Password}, &result); err != nil {
-		log.Fatal(err)
-		return nil, err
+		return nil, errors.RPCError{Code: codes.PasswordMismatch, Desc: "密码错误！"}
 	}
-	token := utils.MakeToken(result.Id.String(), result.Name)
-	reply := &user.LoginResponse{
-		Id:          result.Id.String(),
-		Name:        result.Name,
-		AccessToken: token,
+	token := utils.MakeJWT(result.Id.Hex(), result.Name)
+
+	con := dao.GetRedisConnection()
+	if err := con.Send("setex", result.Id.Hex(), "600", token); err != nil {
+		panic(err)
 	}
-	return reply, nil
+	if err := con.Flush(); err != nil {
+		panic(err)
+	}
+	if r, err := con.Receive(); err != nil {
+		panic(err)
+	} else {
+		if r != nil {
+			return &user.LoginResponse{
+				Id:          result.Id.Hex(),
+				Name:        result.Name,
+				AccessToken: token,
+			}, nil
+		} else {
+			panic("redis插入失败")
+		}
+	}
 }
