@@ -3,11 +3,11 @@ package service
 import (
 	"fmt"
 	"golang.org/x/net/context"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"gopkg.in/mgo.v2/bson"
 	"todomvc/core/dao"
-	"todomvc/core/errors"
 	"todomvc/core/utils"
-	"todomvc/service/user/codes"
 	"todomvc/service/user/model"
 )
 import "todomvc/proto/user"
@@ -18,10 +18,10 @@ func (*UserService) Login(ctx context.Context, userCredential *user.UserCredenti
 	var result model.User
 	fmt.Printf("name:%s,password:%s", userCredential.Name, userCredential.Password)
 	if err := dao.DB.FindOne("user", bson.M{"name": userCredential.Name}, &result); err != nil {
-		return nil, errors.RPCError{Code: codes.UserNotFound, Desc: "用户不存在！"}
+		return nil, status.New(codes.InvalidArgument, "用户名不存在！").Err()
 	}
 	if err := dao.DB.FindOne("user", bson.M{"name": userCredential.Name, "password": userCredential.Password}, &result); err != nil {
-		return nil, errors.RPCError{Code: codes.PasswordMismatch, Desc: "密码错误！"}
+		return nil, status.New(codes.PermissionDenied, "密码错误！").Err()
 	}
 	token := utils.MakeJWT(result.Id.Hex(), result.Name)
 

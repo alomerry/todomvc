@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/grpc-ecosystem/go-grpc-middleware"
 	"google.golang.org/grpc"
 	"net"
 	"todomvc/core/dao"
@@ -9,13 +10,23 @@ import (
 	"todomvc/service/user/service"
 )
 
+func initInterceptor() grpc.ServerOption {
+	return grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
+		interceptor.Authenticate,
+		interceptor.LoggerInterceptor))
+}
+
 func main() {
-	server := grpc.NewServer(grpc.UnaryInterceptor(interceptor.Authenticate))
+
+	server := grpc.NewServer(initInterceptor())
 
 	user.RegisterUserServiceServer(server, new(service.UserService))
 
-	session, err := dao.InitAndAuthenticate()
-	dao.InitRepository(session)
+	if session, err := dao.InitAndAuthenticate(); err != nil {
+		panic(err)
+	} else {
+		dao.InitRepository(session)
+	}
 
 	dao.InitRedis()
 

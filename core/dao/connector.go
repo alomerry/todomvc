@@ -29,6 +29,7 @@ func InitAndAuthenticate() (*mgo.Session, error) {
 	return initConection("admin")
 }
 
+// todo 需要重构
 func initConection(dbName string) (*mgo.Session, error) {
 	utils.Config(&once, &cfg, constant.TodoConf)
 	dialInfo, err := mgo.ParseURL(cfg.IpHost + ":" + cfg.Port)
@@ -39,6 +40,7 @@ func initConection(dbName string) (*mgo.Session, error) {
 	dialInfo.Username = cfg.UserName
 	dialInfo.Password = cfg.Password
 	dbSession, err := mgo.DialWithInfo(dialInfo)
+	dbSession.Login(&mgo.Credential{Username: cfg.UserName, Password: cfg.Password})
 	if err != nil {
 		return nil, err
 	}
