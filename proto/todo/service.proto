@@ -3,3 +3,13 @@ syntax = "proto3";
 package proto.todo;
 
 option go_package = "todo";
+
+import "todo/todo.proto";
+
+service TodoService{
+  //提供查找
+  rpc GetTodo(GetTodoRequest) returns (GetTodoResponse);
+}
+//提供删除
+
+//提供修改

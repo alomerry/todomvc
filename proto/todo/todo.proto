@@ -3,3 +3,27 @@ syntax = "proto3";
 package proto.todo;
 
 option go_package = "todo";
+
+message Todo{
+  string id = 1;
+  string belongTo = 2;
+  string createdAt = 3;
+  string doneAt = 4;
+  string color = 5;
+  string status = 6;
+  string content = 7;
+}
+
+message GetTodoRequest{
+  string sortBy = 1;
+  bool isAscend = 2;
+  int32 page = 3;
+  int32 pageSize = 4;
+  string groupBy = 5;
+  string accessToken = 6;
+}
+
+message GetTodoResponse{
+  repeated Todo todos = 1;
+  int32 total = 2;
+}
