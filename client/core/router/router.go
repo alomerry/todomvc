@@ -15,7 +15,7 @@ func InitRouter() *gin.Engine {
 }
 
 func initMiddleware(router *gin.Engine) {
-	router.Use(middleware.Logger())
+	router.Use(middleware.Authenticate())
 }
 
 func initController(router *gin.Engine) {

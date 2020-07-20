@@ -14,7 +14,7 @@ import (
 
 func main() {
 	router := gin.New()
-	router.Use(middleware.Logger())
+	router.Use(middleware.Authente())
 	router.GET("/test-redis", func(context *gin.Context) {
 		fmt.Println("success")
 	})

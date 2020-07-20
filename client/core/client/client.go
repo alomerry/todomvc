@@ -8,10 +8,13 @@ import (
 	"os/signal"
 	"time"
 	"todomvc/client/core/router"
+	"todomvc/core/dao"
 )
 
 func main() {
 	router := router.InitRouter()
+
+	dao.InitRedis()
 
 	server := &http.Server{
 		Addr:    ":8081",

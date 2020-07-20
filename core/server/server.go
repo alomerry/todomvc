@@ -14,7 +14,6 @@ import (
 
 func initInterceptor() grpc.ServerOption {
 	return grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
-		interceptor.Authenticate,
 		interceptor.LoggerInterceptor))
 }
 
