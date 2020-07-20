@@ -3,7 +3,6 @@ package utils
 import (
 	"crypto/md5"
 	"encoding/hex"
-	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"gopkg.in/mgo.v2"
 	"log"
@@ -33,7 +32,7 @@ func MakeJWT(id, name string) string {
 
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := &jwt.StandardClaims{
-		ExpiresAt: time.Now().Add(time.Minute * 10).Unix(),
+		ExpiresAt: time.Now().Add(time.Minute * 60).Unix(),
 		IssuedAt:  time.Now().Unix(),
 		Issuer:    "alomerry",
 		Id:        id,
@@ -46,8 +45,41 @@ func MakeJWT(id, name string) string {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(tokenString)
 	return tokenString
+}
+
+func GetJWTClaims(accessToken, clasimName string) string {
+	Config(&once, &cfg, constant.SaltConf)
+
+	jwtToken, err := jwt.Parse(accessToken, func(token *jwt.Token) (interface{}, error) {
+		_, ok := token.Method.(*jwt.SigningMethodHMAC)
+		if !ok {
+			panic(ok)
+			return false, nil
+		}
+		return []byte(cfg.JWT_SECRETKEY), nil
+	})
+	if err != nil {
+		panic(err)
+	}
+	return (jwtToken.Claims.(jwt.MapClaims))[clasimName].(string)
+}
+
+func CheckJWTValid(accessToken string) bool {
+	Config(&once, &cfg, constant.SaltConf)
+
+	jwtToken, err := jwt.Parse(accessToken, func(token *jwt.Token) (interface{}, error) {
+		_, ok := token.Method.(*jwt.SigningMethodHMAC)
+		if !ok {
+			panic(ok)
+			return false, nil
+		}
+		return []byte(cfg.JWT_SECRETKEY), nil
+	})
+	if err != nil {
+		panic(err)
+	}
+	return jwtToken.Valid
 }
 
 func md5V(str string) string {

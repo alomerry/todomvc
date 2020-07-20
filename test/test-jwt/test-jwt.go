@@ -21,5 +21,6 @@ func main() {
 		return []byte("dasfdfd43454dE#%#"), nil
 	})
 	fmt.Println(err)
-	fmt.Println(jwtToken.Valid)
+	var maps = jwtToken.Claims.(jwt.MapClaims)
+	fmt.Println(maps["aud"])
 }

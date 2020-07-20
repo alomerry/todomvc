@@ -6,8 +6,10 @@ import (
 	"net"
 	"todomvc/core/dao"
 	"todomvc/core/interceptor"
+	"todomvc/proto/todo"
 	"todomvc/proto/user"
-	"todomvc/service/user/service"
+	todoService "todomvc/service/todo/service"
+	userService "todomvc/service/user/service"
 )
 
 func initInterceptor() grpc.ServerOption {
@@ -20,7 +22,8 @@ func main() {
 
 	server := grpc.NewServer(initInterceptor())
 
-	user.RegisterUserServiceServer(server, new(service.UserService))
+	user.RegisterUserServiceServer(server, new(userService.UserService))
+	todo.RegisterTodoServiceServer(server, new(todoService.TodoService))
 
 	if session, err := dao.InitAndAuthenticate(); err != nil {
 		panic(err)

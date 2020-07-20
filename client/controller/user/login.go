@@ -1,4 +1,4 @@
-package controller
+package user
 
 import (
 	"github.com/gin-gonic/gin"
@@ -9,7 +9,7 @@ import (
 	"todomvc/proto/user"
 )
 
-func LoginController(ctx *gin.Context) {
+func LoginServiceClient(ctx *gin.Context) {
 	conn := utils.GetConnection()
 	defer conn.Close()
 	loginClient := user.NewUserServiceClient(conn)

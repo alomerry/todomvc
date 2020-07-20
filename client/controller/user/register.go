@@ -1,4 +1,4 @@
-package controller
+package user
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 	"todomvc/proto/user"
 )
 
-func RegisterController(ctx *gin.Context) {
+func RegisterServiceClient(ctx *gin.Context) {
 	conn := utils.GetConnection()
 	defer conn.Close()
 	registerClient := user.NewUserServiceClient(conn)

@@ -7,14 +7,18 @@
 package todo
 
 import (
+	context "context"
 	proto "github.com/golang/protobuf/proto"
+	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
 )
 
 const (
-	// Verify that this generated codes is sufficiently up-to-date.
+	// Verify that this generated code is sufficiently up-to-date.
 	_ = protoimpl.EnforceVersion(20 - protoimpl.MinVersion)
 	// Verify that runtime/protoimpl is sufficiently up-to-date.
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
@@ -29,13 +33,48 @@ var File_todo_service_proto protoreflect.FileDescriptor
 var file_todo_service_proto_rawDesc = []byte{
 	0x0a, 0x12, 0x74, 0x6f, 0x64, 0x6f, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x70,
 	0x72, 0x6f, 0x74, 0x6f, 0x12, 0x0a, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x74, 0x6f, 0x64, 0x6f,
-	0x42, 0x06, 0x5a, 0x04, 0x74, 0x6f, 0x64, 0x6f, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x1a, 0x0f, 0x74, 0x6f, 0x64, 0x6f, 0x2f, 0x74, 0x6f, 0x64, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x32, 0xa3, 0x02, 0x0a, 0x0b, 0x54, 0x6f, 0x64, 0x6f, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63,
+	0x65, 0x12, 0x42, 0x0a, 0x07, 0x47, 0x65, 0x74, 0x54, 0x6f, 0x64, 0x6f, 0x12, 0x1a, 0x2e, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x74, 0x6f, 0x64, 0x6f, 0x2e, 0x47, 0x65, 0x74, 0x54, 0x6f, 0x64,
+	0x6f, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1b, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x2e, 0x74, 0x6f, 0x64, 0x6f, 0x2e, 0x47, 0x65, 0x74, 0x54, 0x6f, 0x64, 0x6f, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x40, 0x0a, 0x07, 0x41, 0x64, 0x64, 0x54, 0x6f, 0x64, 0x6f,
+	0x12, 0x1a, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x74, 0x6f, 0x64, 0x6f, 0x2e, 0x41, 0x64,
+	0x64, 0x54, 0x6f, 0x64, 0x6f, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x19, 0x2e, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x74, 0x6f, 0x64, 0x6f, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x46, 0x0a, 0x0a, 0x52, 0x65, 0x6d, 0x6f, 0x76,
+	0x65, 0x54, 0x6f, 0x64, 0x6f, 0x12, 0x1d, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x74, 0x6f,
+	0x64, 0x6f, 0x2e, 0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x54, 0x6f, 0x64, 0x6f, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x1a, 0x19, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x74, 0x6f, 0x64,
+	0x6f, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x46, 0x0a, 0x0a, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x54, 0x6f, 0x64, 0x6f, 0x12, 0x1d, 0x2e,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x74, 0x6f, 0x64, 0x6f, 0x2e, 0x55, 0x70, 0x64, 0x61, 0x74,
+	0x65, 0x54, 0x6f, 0x64, 0x6f, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x19, 0x2e, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x74, 0x6f, 0x64, 0x6f, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x06, 0x5a, 0x04, 0x74, 0x6f, 0x64, 0x6f, 0x62,
+	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
-var file_todo_service_proto_goTypes = []interface{}{}
+var file_todo_service_proto_goTypes = []interface{}{
+	(*GetTodoRequest)(nil),    // 0: proto.todo.GetTodoRequest
+	(*AddTodoRequest)(nil),    // 1: proto.todo.AddTodoRequest
+	(*RemoveTodoRequest)(nil), // 2: proto.todo.RemoveTodoRequest
+	(*UpdateTodoRequest)(nil), // 3: proto.todo.UpdateTodoRequest
+	(*GetTodoResponse)(nil),   // 4: proto.todo.GetTodoResponse
+	(*EmptyResponse)(nil),     // 5: proto.todo.EmptyResponse
+}
 var file_todo_service_proto_depIdxs = []int32{
-	0, // [0:0] is the sub-list for method output_type
-	0, // [0:0] is the sub-list for method input_type
+	0, // 0: proto.todo.TodoService.GetTodo:input_type -> proto.todo.GetTodoRequest
+	1, // 1: proto.todo.TodoService.AddTodo:input_type -> proto.todo.AddTodoRequest
+	2, // 2: proto.todo.TodoService.RemoveTodo:input_type -> proto.todo.RemoveTodoRequest
+	3, // 3: proto.todo.TodoService.UpdateTodo:input_type -> proto.todo.UpdateTodoRequest
+	4, // 4: proto.todo.TodoService.GetTodo:output_type -> proto.todo.GetTodoResponse
+	5, // 5: proto.todo.TodoService.AddTodo:output_type -> proto.todo.EmptyResponse
+	5, // 6: proto.todo.TodoService.RemoveTodo:output_type -> proto.todo.EmptyResponse
+	5, // 7: proto.todo.TodoService.UpdateTodo:output_type -> proto.todo.EmptyResponse
+	4, // [4:8] is the sub-list for method output_type
+	0, // [0:4] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -46,6 +85,7 @@ func file_todo_service_proto_init() {
 	if File_todo_service_proto != nil {
 		return
 	}
+	file_todo_todo_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
@@ -54,7 +94,7 @@ func file_todo_service_proto_init() {
 			NumEnums:      0,
 			NumMessages:   0,
 			NumExtensions: 0,
-			NumServices:   0,
+			NumServices:   1,
 		},
 		GoTypes:           file_todo_service_proto_goTypes,
 		DependencyIndexes: file_todo_service_proto_depIdxs,
@@ -63,4 +103,192 @@ func file_todo_service_proto_init() {
 	file_todo_service_proto_rawDesc = nil
 	file_todo_service_proto_goTypes = nil
 	file_todo_service_proto_depIdxs = nil
+}
+
+// Reference imports to suppress errors if they are not otherwise used.
+var _ context.Context
+var _ grpc.ClientConnInterface
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the grpc package it is being compiled against.
+const _ = grpc.SupportPackageIsVersion6
+
+// TodoServiceClient is the client API for TodoService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
+type TodoServiceClient interface {
+	GetTodo(ctx context.Context, in *GetTodoRequest, opts ...grpc.CallOption) (*GetTodoResponse, error)
+	AddTodo(ctx context.Context, in *AddTodoRequest, opts ...grpc.CallOption) (*EmptyResponse, error)
+	RemoveTodo(ctx context.Context, in *RemoveTodoRequest, opts ...grpc.CallOption) (*EmptyResponse, error)
+	UpdateTodo(ctx context.Context, in *UpdateTodoRequest, opts ...grpc.CallOption) (*EmptyResponse, error)
+}
+
+type todoServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewTodoServiceClient(cc grpc.ClientConnInterface) TodoServiceClient {
+	return &todoServiceClient{cc}
+}
+
+func (c *todoServiceClient) GetTodo(ctx context.Context, in *GetTodoRequest, opts ...grpc.CallOption) (*GetTodoResponse, error) {
+	out := new(GetTodoResponse)
+	err := c.cc.Invoke(ctx, "/proto.todo.TodoService/GetTodo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *todoServiceClient) AddTodo(ctx context.Context, in *AddTodoRequest, opts ...grpc.CallOption) (*EmptyResponse, error) {
+	out := new(EmptyResponse)
+	err := c.cc.Invoke(ctx, "/proto.todo.TodoService/AddTodo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *todoServiceClient) RemoveTodo(ctx context.Context, in *RemoveTodoRequest, opts ...grpc.CallOption) (*EmptyResponse, error) {
+	out := new(EmptyResponse)
+	err := c.cc.Invoke(ctx, "/proto.todo.TodoService/RemoveTodo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *todoServiceClient) UpdateTodo(ctx context.Context, in *UpdateTodoRequest, opts ...grpc.CallOption) (*EmptyResponse, error) {
+	out := new(EmptyResponse)
+	err := c.cc.Invoke(ctx, "/proto.todo.TodoService/UpdateTodo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// TodoServiceServer is the server API for TodoService service.
+type TodoServiceServer interface {
+	GetTodo(context.Context, *GetTodoRequest) (*GetTodoResponse, error)
+	AddTodo(context.Context, *AddTodoRequest) (*EmptyResponse, error)
+	RemoveTodo(context.Context, *RemoveTodoRequest) (*EmptyResponse, error)
+	UpdateTodo(context.Context, *UpdateTodoRequest) (*EmptyResponse, error)
+}
+
+// UnimplementedTodoServiceServer can be embedded to have forward compatible implementations.
+type UnimplementedTodoServiceServer struct {
+}
+
+func (*UnimplementedTodoServiceServer) GetTodo(context.Context, *GetTodoRequest) (*GetTodoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTodo not implemented")
+}
+func (*UnimplementedTodoServiceServer) AddTodo(context.Context, *AddTodoRequest) (*EmptyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddTodo not implemented")
+}
+func (*UnimplementedTodoServiceServer) RemoveTodo(context.Context, *RemoveTodoRequest) (*EmptyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveTodo not implemented")
+}
+func (*UnimplementedTodoServiceServer) UpdateTodo(context.Context, *UpdateTodoRequest) (*EmptyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateTodo not implemented")
+}
+
+func RegisterTodoServiceServer(s *grpc.Server, srv TodoServiceServer) {
+	s.RegisterService(&_TodoService_serviceDesc, srv)
+}
+
+func _TodoService_GetTodo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTodoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TodoServiceServer).GetTodo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.todo.TodoService/GetTodo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TodoServiceServer).GetTodo(ctx, req.(*GetTodoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TodoService_AddTodo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddTodoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TodoServiceServer).AddTodo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.todo.TodoService/AddTodo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TodoServiceServer).AddTodo(ctx, req.(*AddTodoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TodoService_RemoveTodo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RemoveTodoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TodoServiceServer).RemoveTodo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.todo.TodoService/RemoveTodo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TodoServiceServer).RemoveTodo(ctx, req.(*RemoveTodoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TodoService_UpdateTodo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateTodoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TodoServiceServer).UpdateTodo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.todo.TodoService/UpdateTodo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TodoServiceServer).UpdateTodo(ctx, req.(*UpdateTodoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var _TodoService_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "proto.todo.TodoService",
+	HandlerType: (*TodoServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GetTodo",
+			Handler:    _TodoService_GetTodo_Handler,
+		},
+		{
+			MethodName: "AddTodo",
+			Handler:    _TodoService_AddTodo_Handler,
+		},
+		{
+			MethodName: "RemoveTodo",
+			Handler:    _TodoService_RemoveTodo_Handler,
+		},
+		{
+			MethodName: "UpdateTodo",
+			Handler:    _TodoService_UpdateTodo_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "todo/service.proto",
 }

@@ -7,9 +7,8 @@ option go_package = "todo";
 import "todo/todo.proto";
 
 service TodoService{
-  //提供查找
   rpc GetTodo(GetTodoRequest) returns (GetTodoResponse);
+  rpc AddTodo(AddTodoRequest) returns (EmptyResponse);
+  rpc RemoveTodo(RemoveTodoRequest) returns (EmptyResponse);
+  rpc UpdateTodo(UpdateTodoRequest) returns (EmptyResponse);
 }
-//提供删除
-
-//提供修改

@@ -7,10 +7,10 @@ option go_package = "todo";
 message Todo{
   string id = 1;
   string belongTo = 2;
-  string createdAt = 3;
-  string doneAt = 4;
+  int64 createdAt = 3;
+  int64 doneAt = 4;
   string color = 5;
-  string status = 6;
+  bool status = 6;
   string content = 7;
 }
 
@@ -19,11 +19,35 @@ message GetTodoRequest{
   bool isAscend = 2;
   int32 page = 3;
   int32 pageSize = 4;
-  string groupBy = 5;
-  string accessToken = 6;
+  string accessToken = 5;
+  int64 startedAt = 6;
+  int64 endedAt = 7;
+  string keyWord = 8;
+  string status = 9;
 }
 
 message GetTodoResponse{
   repeated Todo todos = 1;
   int32 total = 2;
+}
+
+message AddTodoRequest{
+  string color = 1;
+  string content = 2;
+  string accessToken = 3;
+}
+
+message RemoveTodoRequest{
+  string id = 1;
+  string accessToken = 2;
+}
+
+message UpdateTodoRequest{
+  string id = 1;
+  string accessToken = 2;
+  map<string, string> fields = 3;
+}
+
+message EmptyResponse{
+  string message = 1;
 }
