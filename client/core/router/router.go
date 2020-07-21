@@ -8,7 +8,7 @@ import (
 )
 
 func InitRouter() *gin.Engine {
-	router := gin.New()
+	router := gin.Default()
 	initMiddleware(router)
 	initController(router)
 	return router
@@ -22,7 +22,7 @@ func initController(router *gin.Engine) {
 	router.POST("/login", user.LoginServiceClient)
 	router.POST("/register", user.RegisterServiceClient)
 	router.GET("/todos", todo.GetTodoServiceClient)
-	router.POST("/todos", todo.AddTodoServiceClient)
+	router.POST("/todos", todo.AddTodo)
 	router.DELETE("/todo/:id", todo.RemoveTodoServiceClient)
 	router.PUT("/todo/:id", todo.UpdateTodoServiceClient)
 }

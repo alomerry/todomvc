@@ -1,6 +1,8 @@
 package dao
 
 import (
+	"errors"
+	"fmt"
 	"github.com/gomodule/redigo/redis"
 	"sync"
 	"todomvc/core/constant"
@@ -22,13 +24,17 @@ var (
 )
 var connection redis.Conn
 
-func InitRedis() redis.Conn {
+func init() {
 	utils.Config(&redisOnce, &redisConfig, constant.TodoConf)
-	Connection, err := redis.Dial("tcp", redisConfig.IpHost+":"+redisConfig.RedisPort)
+	InitRedis()
+}
+
+func InitRedis() redis.Conn {
+	connection, err := redis.Dial("tcp", fmt.Sprintf("%s:%s", redisConfig.IpHost, redisConfig.RedisPort))
 	if err != nil {
 		panic(err)
 	}
-	return Connection
+	return connection
 }
 
 func GetRedisConnection() redis.Conn {
@@ -36,5 +42,22 @@ func GetRedisConnection() redis.Conn {
 		return InitRedis()
 	} else {
 		return connection
+	}
+}
+
+func Get(key string) (interface{}, error) {
+	connection := GetRedisConnection()
+	if err := connection.Send("get", key); err != nil {
+		panic(err)
+	}
+	if err := connection.Flush(); err != nil {
+		panic(err)
+	}
+	if result, err := connection.Receive(); err != nil {
+		panic(err)
+	} else if result == nil {
+		return "", errors.New(fmt.Sprintf("key:[%s]不存在", key))
+	} else {
+		return result, nil
 	}
 }

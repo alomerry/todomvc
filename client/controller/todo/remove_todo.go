@@ -11,15 +11,12 @@ import (
 func RemoveTodoServiceClient(ctx *gin.Context) {
 	conn := utils.GetConnection()
 	defer conn.Close()
-	id, accessToken :=
-		ctx.Param("id"), ctx.GetHeader("accessToken")
-	removeTodoClient := todo.NewTodoServiceClient(conn)
-	reply, err := removeTodoClient.RemoveTodo(context.Background(), &todo.RemoveTodoRequest{
-		Id:          id,
-		AccessToken: accessToken,
+	todoClient := todo.NewTodoServiceClient(conn)
+	_, err := todoClient.RemoveTodo(context.Background(), &todo.RemoveTodoRequest{
+		Id: ctx.Param("id"),
 	})
 	if err != nil {
 		panic(err)
 	}
-	ctx.String(codes.OK, reply.Message)
+	ctx.String(codes.OK, "删除成功！")
 }

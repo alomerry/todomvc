@@ -23,20 +23,20 @@ var (
 	dbSession *mgo.Session
 )
 
-func GetTokenEcpirationTime() int {
+func init() {
 	Config(&once, &cfg, constant.SaltConf)
+}
+
+func GetTokenEcpirationTime() int {
 	res := GetConfItem(&cfg, "TOKEN_ECPIRATION_TIME").Int()
 	return int(res)
 }
 
 func MakeToken(id, name string) string {
-	Config(&once, &cfg, constant.SaltConf)
 	return md5V(id + (string(time.Now().Nanosecond())) + cfg.ACCESS_TOKEN_SALT + name)
 }
 
 func MakeJWT(id, name string) string {
-	Config(&once, &cfg, constant.SaltConf)
-
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := &jwt.StandardClaims{
 		ExpiresAt: time.Now().Add(time.Second * time.Duration(cfg.TOKEN_ECPIRATION_TIME)).Unix(),
@@ -57,8 +57,6 @@ func MakeJWT(id, name string) string {
 }
 
 func GetJWTClaims(accessToken, clasimName string) string {
-	Config(&once, &cfg, constant.SaltConf)
-
 	jwtToken, err := jwt.Parse(accessToken, func(token *jwt.Token) (interface{}, error) {
 		_, ok := token.Method.(*jwt.SigningMethodHMAC)
 		if !ok {
@@ -73,7 +71,7 @@ func GetJWTClaims(accessToken, clasimName string) string {
 	return (jwtToken.Claims.(jwt.MapClaims))[clasimName].(string)
 }
 
-func CheckJWTValid(accessToken string) bool {
+func IsJWTValid(accessToken string) bool {
 	Config(&once, &cfg, constant.SaltConf)
 	jwtToken, err := jwt.Parse(accessToken, func(token *jwt.Token) (interface{}, error) {
 		_, ok := token.Method.(*jwt.SigningMethodHMAC)

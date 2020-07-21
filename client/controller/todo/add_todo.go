@@ -5,22 +5,29 @@ import (
 	"golang.org/x/net/context"
 	"todomvc/client/core/codes"
 	"todomvc/client/core/utils"
-	"todomvc/proto/todo"
+	todo "todomvc/client/model/todo"
+	token "todomvc/core/utils"
+	proto "todomvc/proto/todo"
 )
 
-func AddTodoServiceClient(ctx *gin.Context) {
-	conn := utils.GetConnection()
-	defer conn.Close()
-	color, content, accessToken :=
-		ctx.PostForm("color"), ctx.PostForm("content"), ctx.GetHeader("accessToken")
-	addTodoClient := todo.NewTodoServiceClient(conn)
-	reply, err := addTodoClient.AddTodo(context.Background(), &todo.AddTodoRequest{
-		Color:       color,
-		Content:     content,
-		AccessToken: accessToken,
+func AddTodo(ctx *gin.Context) {
+	connection := utils.GetConnection()
+	defer connection.Close()
+
+	var todo todo.AddTodoRequest
+	if ctx.ShouldBind(&todo) != nil {
+		panic("参数绑定出错")
+	}
+
+	todoClient := proto.NewTodoServiceClient(connection)
+	_, err := todoClient.AddTodo(context.Background(), &proto.AddTodoRequest{
+		Color:   todo.Color,
+		Content: todo.Content,
+		UserId:  token.GetJWTClaims(ctx.GetHeader("accessToken"), "jti"),
 	})
 	if err != nil {
 		panic(err)
 	}
-	ctx.String(codes.OK, reply.Message)
+
+	ctx.String(codes.OK, "添加成功！")
 }

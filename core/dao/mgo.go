@@ -12,9 +12,9 @@ type DatabaseRepository interface {
 	FindWithSorterAndLimit(collectionName string, selector bson.M, field string, page, pageSize int, result interface{}) error
 	GetCount(collectionName string, selector bson.M) (int, error)
 	GetCountWithSorter(collectionName string, selector bson.M, field string) (int, error)
-	UpdateId(collectionName string, id bson.ObjectId, update interface{}) error
+	UpdateById(collectionName string, id bson.ObjectId, update interface{}) error
 	InsertOne(collectionName string, docs bson.M) error
-	RemoveId(collectionName string, id bson.ObjectId) error
+	RemoveById(collectionName string, id bson.ObjectId) error
 }
 
 type mongoDBRepository struct {
@@ -59,10 +59,10 @@ func (repo *mongoDBRepository) InsertOne(collectionName string, docs bson.M) err
 	return repo.db.C(collectionName).Insert(&docs)
 }
 
-func (repo *mongoDBRepository) RemoveId(collectionName string, id bson.ObjectId) error {
+func (repo *mongoDBRepository) RemoveById(collectionName string, id bson.ObjectId) error {
 	return repo.db.C(collectionName).RemoveId(id)
 }
 
-func (repo *mongoDBRepository) UpdateId(collectionName string, id bson.ObjectId, update interface{}) error {
+func (repo *mongoDBRepository) UpdateById(collectionName string, id bson.ObjectId, update interface{}) error {
 	return repo.db.C(collectionName).UpdateId(id, update)
 }

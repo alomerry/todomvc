@@ -5,7 +5,6 @@ import (
 	"gopkg.in/mgo.v2/bson"
 	"strconv"
 	"todomvc/core/dao"
-	"todomvc/core/utils"
 	"todomvc/proto/todo"
 	"todomvc/service/todo/model"
 )
@@ -14,9 +13,8 @@ func (*TodoService) GetTodo(ctx context.Context, todoRequest *todo.GetTodoReques
 	var result []model.Todo
 	var total int
 	var err error
-	userId := bson.ObjectIdHex(utils.GetJWTClaims(todoRequest.AccessToken, "jti"))
 	var selector []bson.M
-	selector = append(selector, bson.M{"belongTo": userId})
+	selector = append(selector, bson.M{"userId": bson.ObjectIdHex(todoRequest.UserId)})
 	if todoRequest.SortBy == "" {
 		todoRequest.SortBy = "createdAt"
 	}
@@ -35,9 +33,9 @@ func (*TodoService) GetTodo(ctx context.Context, todoRequest *todo.GetTodoReques
 		}
 		selector = append(selector, bson.M{"status": tmp})
 	}
-	if todoRequest.KeyWord != "" {
+	if todoRequest.Keyword != "" {
 		selector = append(selector, bson.M{"content": bson.M{
-			"$regex": todoRequest.KeyWord,
+			"$regex": todoRequest.Keyword,
 		}})
 	}
 	if err := dao.DB.FindWithSorterAndLimit("todo", bson.M{"$and": selector}, todoRequest.SortBy, int(todoRequest.Page), int(todoRequest.PageSize), &result); err != nil {
@@ -58,7 +56,7 @@ func conventTodos(todos []model.Todo) []*todo.Todo {
 	for _, item := range todos {
 		res = append(res, &todo.Todo{
 			Id:        item.Id.Hex(),
-			BelongTo:  item.BelongTo.Hex(),
+			UserId:    item.UserId.Hex(),
 			CreatedAt: item.CreatedAt,
 			DoneAt:    item.DoneAt,
 			Color:     item.Color,

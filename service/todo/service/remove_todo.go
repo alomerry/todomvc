@@ -8,9 +8,9 @@ import (
 )
 
 func (*TodoService) RemoveTodo(ctx context.Context, request *todo.RemoveTodoRequest) (*todo.EmptyResponse, error) {
-	err := dao.DB.RemoveId("todo", bson.ObjectIdHex(request.Id))
+	err := dao.DB.RemoveById("todo", bson.ObjectIdHex(request.Id))
 	if err != nil {
 		panic(err)
 	}
-	return &todo.EmptyResponse{Message: "删除成功！"}, nil
+	return &todo.EmptyResponse{}, nil
 }

@@ -10,12 +10,12 @@ import (
 )
 
 func (*TodoService) UpdateTodo(ctx context.Context, request *todo.UpdateTodoRequest) (*todo.EmptyResponse, error) {
-	err := dao.DB.UpdateId("todo", bson.ObjectIdHex(request.Id),
+	err := dao.DB.UpdateById("todo", bson.ObjectIdHex(request.Id),
 		bson.M{"$set": toBson(request.Fields)})
 	if err != nil {
 		panic(err)
 	}
-	return &todo.EmptyResponse{Message: "修改成功！"}, nil
+	return &todo.EmptyResponse{}, nil
 }
 
 func toBson(fields map[string]string) bson.M {
