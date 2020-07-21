@@ -12,8 +12,9 @@ import (
 )
 
 type Conf struct {
-	ACCESS_TOKEN_SALT string
-	JWT_SECRETKEY     string
+	ACCESS_TOKEN_SALT     string
+	JWT_SECRETKEY         string
+	TOKEN_ECPIRATION_TIME int
 }
 
 var (
@@ -21,6 +22,12 @@ var (
 	once      sync.Once
 	dbSession *mgo.Session
 )
+
+func GetTokenEcpirationTime() int {
+	Config(&once, &cfg, constant.SaltConf)
+	res := GetConfItem(&cfg, "TOKEN_ECPIRATION_TIME").Int()
+	return int(res)
+}
 
 func MakeToken(id, name string) string {
 	Config(&once, &cfg, constant.SaltConf)
@@ -32,7 +39,7 @@ func MakeJWT(id, name string) string {
 
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := &jwt.StandardClaims{
-		ExpiresAt: time.Now().Add(time.Minute * 60).Unix(),
+		ExpiresAt: time.Now().Add(time.Second * time.Duration(cfg.TOKEN_ECPIRATION_TIME)).Unix(),
 		IssuedAt:  time.Now().Unix(),
 		Issuer:    "alomerry",
 		Id:        id,
@@ -45,6 +52,7 @@ func MakeJWT(id, name string) string {
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Println("make token:", tokenString)
 	return tokenString
 }
 
@@ -67,7 +75,6 @@ func GetJWTClaims(accessToken, clasimName string) string {
 
 func CheckJWTValid(accessToken string) bool {
 	Config(&once, &cfg, constant.SaltConf)
-
 	jwtToken, err := jwt.Parse(accessToken, func(token *jwt.Token) (interface{}, error) {
 		_, ok := token.Method.(*jwt.SigningMethodHMAC)
 		if !ok {
@@ -77,7 +84,7 @@ func CheckJWTValid(accessToken string) bool {
 		return []byte(cfg.JWT_SECRETKEY), nil
 	})
 	if err != nil {
-		panic(err)
+		return false
 	}
 	return jwtToken.Valid
 }

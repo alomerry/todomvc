@@ -9,13 +9,11 @@ import (
 )
 
 func Authenticate() gin.HandlerFunc {
-	//todo 验证token redis是否有？是否过期
 	return func(ctx *gin.Context) {
 		log.Println("正在访问路径", ctx.Request.URL.Path)
 		requestUrl := ctx.Request.RequestURI
-		if requestUrl != "/login" || requestUrl != "/register" {
+		if requestUrl != "/login" && requestUrl != "/register" {
 			if utils.CheckJWTValid(ctx.GetHeader("accessToken")) {
-				//todd 验证redis
 				connection := dao.GetRedisConnection()
 				if err := connection.Send("get", ctx.GetHeader("accessToken")); err != nil {
 					panic(err)
@@ -27,17 +25,21 @@ func Authenticate() gin.HandlerFunc {
 					panic(err)
 				} else {
 					if res == nil {
-						ctx.String(codes.UNAUTHORIZED, "token不受信任,请重新登录")
+						ctx.String(codes.UNAUTHORIZED, "token 不受信任,请重新登录")
+						ctx.Abort()
 					} else {
 						ctx.Next()
 					}
 				}
 			} else {
 				ctx.String(codes.UNAUTHORIZED, "token 过期，请重新登录")
+				ctx.Abort()
 			}
 		} else {
 			ctx.Next()
 		}
 		log.Println("访问结束")
+		ctx.Abort()
+
 	}
 }

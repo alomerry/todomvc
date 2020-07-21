@@ -26,11 +26,10 @@ func GetSession() *mgo.Session {
 }
 
 func InitAndAuthenticate() (*mgo.Session, error) {
-	return initConection("admin")
+	return initConnection("admin")
 }
 
-// todo 需要重构
-func initConection(dbName string) (*mgo.Session, error) {
+func initConnection(dbName string) (*mgo.Session, error) {
 	utils.Config(&once, &cfg, constant.TodoConf)
 	dialInfo, err := mgo.ParseURL(cfg.IpHost + ":" + cfg.Port)
 	if err != nil {

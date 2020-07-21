@@ -25,11 +25,4 @@ func initController(router *gin.Engine) {
 	router.POST("/todos", todo.AddTodoServiceClient)
 	router.DELETE("/todo/:id", todo.RemoveTodoServiceClient)
 	router.PUT("/todo/:id", todo.UpdateTodoServiceClient)
-	//router.PUT("/test", gin.HandlerFunc(func(ctx *gin.Context) {
-	//	fmt.Println(reflect.TypeOf(ctx.PostForm("status")))
-	//	fmt.Println(ctx.PostForm("status"))
-	//	fmt.Println(ctx.PostForm("content"))
-	//	fmt.Println(ctx.PostForm("color"))
-	//}))
-
 }

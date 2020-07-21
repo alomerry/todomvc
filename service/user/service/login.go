@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -13,10 +12,10 @@ import (
 import "todomvc/proto/user"
 
 func (*UserService) Login(ctx context.Context, userCredential *user.UserCredential) (*user.LoginResponse, error) {
-	// todo 验证数据长度等等
-
 	var result model.User
-	fmt.Printf("name:%s,password:%s", userCredential.Name, userCredential.Password)
+	if ok, err := isLoginValid(userCredential); !ok {
+		return nil, err
+	}
 	if err := dao.DB.FindOne("user", bson.M{"name": userCredential.Name}, &result); err != nil {
 		return nil, status.New(codes.InvalidArgument, "用户名不存在！").Err()
 	}
@@ -26,7 +25,7 @@ func (*UserService) Login(ctx context.Context, userCredential *user.UserCredenti
 	token := utils.MakeJWT(result.Id.Hex(), result.Name)
 
 	con := dao.GetRedisConnection()
-	if err := con.Send("setex", result.Id.Hex(), "600", token); err != nil {
+	if err := con.Send("setex", token, utils.GetTokenEcpirationTime(), result.Id.Hex()); err != nil {
 		panic(err)
 	}
 	if err := con.Flush(); err != nil {
@@ -45,4 +44,13 @@ func (*UserService) Login(ctx context.Context, userCredential *user.UserCredenti
 			panic("redis插入失败")
 		}
 	}
+}
+
+func isLoginValid(credential *user.UserCredential) (bool, error) {
+	if len(credential.Name) < 6 || len(credential.Name) > 12 {
+		return false, status.Error(codes.InvalidArgument, "用户名长度不合法")
+	} else if len(credential.Password) < 6 || len(credential.Password) > 18 {
+		return false, status.Error(codes.InvalidArgument, "密码长度不合法")
+	}
+	return true, nil
 }

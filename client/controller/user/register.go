@@ -2,7 +2,6 @@ package user
 
 import (
 	"context"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 	"todomvc/client/core/codes"
@@ -16,8 +15,7 @@ func RegisterServiceClient(ctx *gin.Context) {
 	registerClient := user.NewUserServiceClient(conn)
 
 	name, password, repeatPassword := ctx.PostForm("name"), ctx.PostForm("password"), ctx.PostForm("repeatPassword")
-	fmt.Printf("name:[%s],password:[%s],repeatPassword:[%s]", name, password, repeatPassword)
-	reply, err := registerClient.Register(context.Background(), &user.RegisterCredential{
+	replay, err := registerClient.Register(context.Background(), &user.RegisterCredential{
 		Name:           name,
 		Password:       password,
 		RepeatPassword: repeatPassword,
@@ -26,6 +24,7 @@ func RegisterServiceClient(ctx *gin.Context) {
 		log.Print(err)
 		ctx.String(codes.BAD_REQUEST, "用户已存在!")
 		return
+	} else {
+		ctx.String(codes.OK, replay.AccessToken)
 	}
-	fmt.Println(reply)
 }

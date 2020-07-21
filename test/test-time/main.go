@@ -7,12 +7,12 @@ import (
 
 func main() {
 	//
-	timestamp := time.Now().UnixNano()
+	timestamp := time.Now().UnixNano()/1000
 	fmt.Println(timestamp)
 	timestamp = time.Now().Unix()
 	fmt.Println(timestamp)
-	fmt.Println("1594464695508\n")
-	timestamp = 1594464695508
-	fmt.Println(time.Unix(timestamp, 0))
+	fmt.Println("1595295812504")
+	timestamp = 1595295812504
+	fmt.Println(time.Unix(timestamp/1000,0))
 
 }

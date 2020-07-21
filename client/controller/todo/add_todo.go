@@ -1,7 +1,6 @@
 package todo
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/net/context"
 	"todomvc/client/core/codes"
@@ -14,7 +13,6 @@ func AddTodoServiceClient(ctx *gin.Context) {
 	defer conn.Close()
 	color, content, accessToken :=
 		ctx.PostForm("color"), ctx.PostForm("content"), ctx.GetHeader("accessToken")
-	fmt.Printf("request[{\n\ttoken:%s\n\tcolor:%s\n\tcontent:%\n}]\n", accessToken, color, content)
 	addTodoClient := todo.NewTodoServiceClient(conn)
 	reply, err := addTodoClient.AddTodo(context.Background(), &todo.AddTodoRequest{
 		Color:       color,

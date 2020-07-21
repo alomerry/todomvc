@@ -1,7 +1,6 @@
 package todo
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/net/context"
 	"todomvc/client/core/codes"
@@ -14,7 +13,6 @@ func RemoveTodoServiceClient(ctx *gin.Context) {
 	defer conn.Close()
 	id, accessToken :=
 		ctx.Param("id"), ctx.GetHeader("accessToken")
-	fmt.Printf("request[{\n\ttoken:%s\n\tid:%s\n\tcontent:%\n}]\n", accessToken, id)
 	removeTodoClient := todo.NewTodoServiceClient(conn)
 	reply, err := removeTodoClient.RemoveTodo(context.Background(), &todo.RemoveTodoRequest{
 		Id:          id,

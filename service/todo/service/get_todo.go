@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"golang.org/x/net/context"
 	"gopkg.in/mgo.v2/bson"
 	"strconv"
@@ -24,8 +23,8 @@ func (*TodoService) GetTodo(ctx context.Context, todoRequest *todo.GetTodoReques
 	if todoRequest.StartedAt != 0 && todoRequest.EndedAt != 0 {
 		selector = append(selector, bson.M{
 			"createdAt": bson.M{
-				"$lte": todoRequest.EndedAt,
-				"$gte": todoRequest.StartedAt,
+				"$lte": todoRequest.EndedAt * 1000,
+				"$gte": todoRequest.StartedAt * 1000,
 			},
 		})
 	}
@@ -36,10 +35,9 @@ func (*TodoService) GetTodo(ctx context.Context, todoRequest *todo.GetTodoReques
 		}
 		selector = append(selector, bson.M{"status": tmp})
 	}
-	fmt.Println(todoRequest.KeyWord)
 	if todoRequest.KeyWord != "" {
 		selector = append(selector, bson.M{"content": bson.M{
-			"$regex":todoRequest.KeyWord,
+			"$regex": todoRequest.KeyWord,
 		}})
 	}
 	if err := dao.DB.FindWithSorterAndLimit("todo", bson.M{"$and": selector}, todoRequest.SortBy, int(todoRequest.Page), int(todoRequest.PageSize), &result); err != nil {

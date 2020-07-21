@@ -7,8 +7,8 @@ import (
 )
 
 func LoggerInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-	fmt.Printf("[info][%s]\n", info.FullMethod)
+	fmt.Printf("[info:%s]\n", info.FullMethod)
 	resp, err := handler(ctx, req)
-	//fmt.Printf("[%s][%s]\n", resp, err)
+	fmt.Printf("[info:%s]\n", err)
 	return resp, err
 }

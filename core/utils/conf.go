@@ -19,6 +19,6 @@ func Config(once *sync.Once, cfg interface{}, location string) {
 	})
 }
 
-func GetConfItem(cfg interface{}, field string) string {
-	return reflect.ValueOf(cfg).Elem().FieldByName(field).String()
+func GetConfItem(cfg interface{}, field string) reflect.Value {
+	return reflect.ValueOf(cfg).Elem().FieldByName(field)
 }
