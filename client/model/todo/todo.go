@@ -3,7 +3,6 @@ package todo
 type AddTodoRequest struct {
 	Color   string `form:"color" binding:"required"`
 	Content string `form:"content" binding:"required"`
-	Status  bool   `form:"status" binding:"-"`
 }
 
 type GetTodoRequest struct {
@@ -17,4 +16,10 @@ type GetTodoRequest struct {
 	Keyword  string `form:"keyword"`
 	StartAt  int64  `form:"startAt"`
 	EndAt    int64  `form:"endAt"`
+}
+
+type UpdateTodoRequest struct {
+	Color   string `form:"color" binding:"required"`
+	Content string `form:"content" binding:"required"`
+	Status  string `form:"status" binding:"-"`
 }
