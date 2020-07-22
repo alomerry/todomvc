@@ -10,10 +10,8 @@ import (
 )
 
 func (*TodoService) UpdateTodo(ctx context.Context, request *todo.UpdateTodoRequest) (*todo.EmptyResponse, error) {
-	err := dao.DB.UpdateById("todo", bson.ObjectIdHex(request.Id),
-		bson.M{"$set": toBson(request.Fields)})
-	if err != nil {
-		panic(err)
+	if dao.DB.UpdateById("todo", bson.ObjectIdHex(request.Id), bson.M{"$set": toBson(request.Fields)}) != nil {
+		panic("更新失败")
 	}
 	return &todo.EmptyResponse{}, nil
 }

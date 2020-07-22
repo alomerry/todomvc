@@ -50,21 +50,14 @@ func MakeJWT(id, name string) string {
 
 	tokenString, err := token.SignedString([]byte(cfg.JWT_SECRETKEY))
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 	log.Println("make token:", tokenString)
 	return tokenString
 }
 
 func GetJWTClaims(accessToken, clasimName string) string {
-	jwtToken, err := jwt.Parse(accessToken, func(token *jwt.Token) (interface{}, error) {
-		_, ok := token.Method.(*jwt.SigningMethodHMAC)
-		if !ok {
-			panic(ok)
-			return false, nil
-		}
-		return []byte(cfg.JWT_SECRETKEY), nil
-	})
+	jwtToken, err := parse(accessToken)
 	if err != nil {
 		panic(err)
 	}
@@ -73,14 +66,7 @@ func GetJWTClaims(accessToken, clasimName string) string {
 
 func IsJWTValid(accessToken string) bool {
 	Config(&once, &cfg, constant.SaltConf)
-	jwtToken, err := jwt.Parse(accessToken, func(token *jwt.Token) (interface{}, error) {
-		_, ok := token.Method.(*jwt.SigningMethodHMAC)
-		if !ok {
-			panic(ok)
-			return false, nil
-		}
-		return []byte(cfg.JWT_SECRETKEY), nil
-	})
+	jwtToken, err := parse(accessToken)
 	if err != nil {
 		return false
 	}
@@ -91,4 +77,14 @@ func md5V(str string) string {
 	h := md5.New()
 	h.Write([]byte(str))
 	return hex.EncodeToString(h.Sum(nil))
+}
+
+func parse(accessToken string) (*jwt.Token, error) {
+	return jwt.Parse(accessToken, func(token *jwt.Token) (interface{}, error) {
+		_, isValid := token.Method.(*jwt.SigningMethodHMAC)
+		if !isValid {
+			return false, nil
+		}
+		return []byte(cfg.JWT_SECRETKEY), nil
+	})
 }

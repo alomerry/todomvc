@@ -6,19 +6,24 @@ import (
 	"log"
 	"todomvc/client/core/codes"
 	"todomvc/client/core/utils"
-	"todomvc/proto/user"
+	"todomvc/client/model/user"
+	proto "todomvc/proto/user"
 )
 
-func RegisterServiceClient(ctx *gin.Context) {
-	conn := utils.GetConnection()
-	defer conn.Close()
-	registerClient := user.NewUserServiceClient(conn)
+func Register(ctx *gin.Context) {
+	connection := utils.GetConnection()
+	defer connection.Close()
 
-	name, password, repeatPassword := ctx.PostForm("name"), ctx.PostForm("password"), ctx.PostForm("repeatPassword")
-	replay, err := registerClient.Register(context.Background(), &user.RegisterCredential{
-		Name:           name,
-		Password:       password,
-		RepeatPassword: repeatPassword,
+	var user user.RegisterRequest
+	if ctx.ShouldBind(&user) != nil {
+		panic("参数绑定出错")
+	}
+
+	userClient := proto.NewUserServiceClient(connection)
+	replay, err := userClient.Register(context.Background(), &proto.RegisterCredential{
+		Name:           user.Name,
+		Password:       user.Password,
+		RepeatPassword: user.RepeatPassword,
 	})
 	if err != nil {
 		log.Print(err)

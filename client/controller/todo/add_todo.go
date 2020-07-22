@@ -20,6 +20,7 @@ func AddTodo(ctx *gin.Context) {
 	}
 
 	todoClient := proto.NewTodoServiceClient(connection)
+
 	_, err := todoClient.AddTodo(context.Background(), &proto.AddTodoRequest{
 		Color:   todo.Color,
 		Content: todo.Content,

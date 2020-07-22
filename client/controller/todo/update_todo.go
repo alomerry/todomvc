@@ -9,7 +9,7 @@ import (
 	proto "todomvc/proto/todo"
 )
 
-func UpdateTodoServiceClient(ctx *gin.Context) {
+func UpdateTodo(ctx *gin.Context) {
 	connection := utils.GetConnection()
 	defer connection.Close()
 
@@ -21,27 +21,28 @@ func UpdateTodoServiceClient(ctx *gin.Context) {
 	if err != nil {
 		panic(err)
 	}
+
 	ctx.String(codes.OK, "修改成功！")
 }
 
 func makeUpdateField(ctx *gin.Context) map[string]string {
-	res := make(map[string]string)
+	needUpdateFields := make(map[string]string)
 	var todo todo.UpdateTodoRequest
 	if ctx.ShouldBind(&todo) != nil {
 		panic("数据绑定错误")
 	}
 
 	if todo.Status == "1" {
-		res["status"] = "true"
+		needUpdateFields["status"] = "true"
 	}
 	if todo.Status == "0" {
-		res["status"] = "false"
+		needUpdateFields["status"] = "false"
 	}
 	if todo.Color != "" {
-		res["color"] = todo.Color
+		needUpdateFields["color"] = todo.Color
 	}
 	if todo.Content != "" {
-		res["content"] = todo.Content
+		needUpdateFields["content"] = todo.Content
 	}
-	return res
+	return needUpdateFields
 }

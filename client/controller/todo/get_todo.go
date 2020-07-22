@@ -9,7 +9,7 @@ import (
 	proto "todomvc/proto/todo"
 )
 
-func GetTodoServiceClient(ctx *gin.Context) {
+func GetTodo(ctx *gin.Context) {
 	connection := utils.GetConnection()
 	defer connection.Close()
 
@@ -17,7 +17,9 @@ func GetTodoServiceClient(ctx *gin.Context) {
 	if ctx.ShouldBindQuery(&todoRequest) != nil {
 		panic("参数绑定出错")
 	}
+
 	getTodoClient := proto.NewTodoServiceClient(connection)
+
 	reply, err := getTodoClient.GetTodo(ctx, &proto.GetTodoRequest{
 		SortBy:    todoRequest.SortBy,
 		IsAscend:  todoRequest.IsAscend == 1,
@@ -30,7 +32,8 @@ func GetTodoServiceClient(ctx *gin.Context) {
 		UserId:    token.GetJWTClaims(ctx.GetHeader("accessToken"), "jti"),
 	})
 	if err != nil {
-		panic(nil)
+		panic(err)
 	}
+
 	ctx.JSON(codes.OK, reply)
 }

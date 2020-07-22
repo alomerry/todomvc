@@ -5,14 +5,27 @@ import (
 	"gopkg.in/mgo.v2/bson"
 	"strconv"
 	"todomvc/core/dao"
-	"todomvc/proto/todo"
+	proto "todomvc/proto/todo"
 	"todomvc/service/todo/model"
 )
 
-func (*TodoService) GetTodo(ctx context.Context, todoRequest *todo.GetTodoRequest) (*todo.GetTodoResponse, error) {
+func (*TodoService) GetTodo(ctx context.Context, todoRequest *proto.GetTodoRequest) (*proto.GetTodoResponse, error) {
 	var result []model.Todo
-	var total int
-	var err error
+
+	selector := makeSelector(todoRequest)
+	if err := dao.DB.FindWithSorterAndLimit("todo", bson.M{"$and": selector}, todoRequest.SortBy, int(todoRequest.Page), int(todoRequest.PageSize), &result); err != nil {
+		panic(err)
+	}
+	total, err := dao.DB.GetCountWithSorter("todo", bson.M{"$and": selector}, todoRequest.SortBy)
+	if err != nil {
+		panic(err)
+	}
+	return &proto.GetTodoResponse{
+		Todos: conventTodos(result),
+		Total: int32(total),
+	}, nil
+}
+func makeSelector(todoRequest *proto.GetTodoRequest) []bson.M {
 	var selector []bson.M
 	selector = append(selector, bson.M{"userId": bson.ObjectIdHex(todoRequest.UserId)})
 	if todoRequest.SortBy == "" {
@@ -38,31 +51,20 @@ func (*TodoService) GetTodo(ctx context.Context, todoRequest *todo.GetTodoReques
 			"$regex": todoRequest.Keyword,
 		}})
 	}
-	if err := dao.DB.FindWithSorterAndLimit("todo", bson.M{"$and": selector}, todoRequest.SortBy, int(todoRequest.Page), int(todoRequest.PageSize), &result); err != nil {
-		panic(err)
-	}
-	total, err = dao.DB.GetCountWithSorter("todo", bson.M{"$and": selector}, todoRequest.SortBy)
-	if err != nil {
-		panic(err)
-	}
-	return &todo.GetTodoResponse{
-		Todos: conventTodos(result),
-		Total: int32(total),
-	}, nil
+	return selector
 }
-
-func conventTodos(todos []model.Todo) []*todo.Todo {
-	var res []*todo.Todo
-	for _, item := range todos {
-		res = append(res, &todo.Todo{
-			Id:        item.Id.Hex(),
-			UserId:    item.UserId.Hex(),
-			CreatedAt: item.CreatedAt,
-			DoneAt:    item.DoneAt,
-			Color:     item.Color,
-			Status:    item.Status,
-			Content:   item.Content,
-		})
+func conventTodos(todos []model.Todo) []*proto.Todo {
+	result := make([]*proto.Todo, len(todos))
+	for i, todo := range todos {
+		result[i] = &proto.Todo{
+			Id:        todo.Id.Hex(),
+			UserId:    todo.UserId.Hex(),
+			CreatedAt: todo.CreatedAt,
+			DoneAt:    todo.DoneAt,
+			Color:     todo.Color,
+			Status:    todo.Status,
+			Content:   todo.Content,
+		}
 	}
-	return res
+	return result
 }

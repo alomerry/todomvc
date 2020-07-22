@@ -9,7 +9,6 @@ import (
 )
 
 func (*TodoService) AddTodo(ctx context.Context, request *todo.AddTodoRequest) (*todo.EmptyResponse, error) {
-
 	userId := bson.ObjectIdHex(request.UserId)
 	err := dao.DB.InsertOne("todo", bson.M{
 		"userId":    userId,

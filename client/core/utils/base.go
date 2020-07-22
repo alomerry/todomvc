@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"google.golang.org/grpc"
 	"sync"
 	"todomvc/client/core/constant"
@@ -17,18 +18,18 @@ var (
 	cfg  Conf
 )
 
-func GetDialHost() string {
-
+func init() {
 	utils.Config(&once, &cfg, constant.ClientConf)
-	ip, port := cfg.IpHost, cfg.Port
-	return ip + ":" + port
+}
+
+func GetDialHost() string {
+	return fmt.Sprintf("%s:%s", cfg.IpHost, cfg.Port)
 }
 
 func GetConnection() *grpc.ClientConn {
 	connection, err := grpc.Dial(GetDialHost(), grpc.WithInsecure())
 	if err != nil {
 		panic(err)
-		return nil
 	}
 	return connection
 }

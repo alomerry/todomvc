@@ -19,10 +19,10 @@ func initMiddleware(router *gin.Engine) {
 }
 
 func initController(router *gin.Engine) {
-	router.POST("/login", user.LoginServiceClient)
-	router.POST("/register", user.RegisterServiceClient)
-	router.GET("/todos", todo.GetTodoServiceClient)
+	router.POST("/login", user.Login)
+	router.POST("/register", user.Register)
+	router.GET("/todos", todo.GetTodo)
 	router.POST("/todos", todo.AddTodo)
-	router.DELETE("/todo/:id", todo.RemoveTodoServiceClient)
-	router.PUT("/todo/:id", todo.UpdateTodoServiceClient)
+	router.DELETE("/todo/:id", todo.RemoveTodo)
+	router.PUT("/todo/:id", todo.UpdateTodo)
 }

@@ -13,3 +13,15 @@ type Todo struct {
 	Status    bool          `bson:"status"`
 	Content   string        `bson:"content"`
 }
+
+func NewProtoTodo(id, userId bson.ObjectId, createdAt, doneAt int64, color string, status bool, content string) *Todo {
+	return &Todo{
+		Id:        id,
+		UserId:    userId,
+		CreatedAt: createdAt,
+		DoneAt:    doneAt,
+		Color:     color,
+		Status:    status,
+		Content:   content,
+	}
+}
