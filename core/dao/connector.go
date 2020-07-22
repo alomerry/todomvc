@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"fmt"
 	"gopkg.in/mgo.v2"
 	"sync"
 	"todomvc/core/constant"
@@ -34,7 +35,7 @@ func InitAndAuthenticate() (*mgo.Session, error) {
 }
 
 func initConnection(dbName string) (*mgo.Session, error) {
-	dialInfo, err := mgo.ParseURL(cfg.Host + ":" + cfg.Port)
+	dialInfo, err := mgo.ParseURL(fmt.Sprintf("%s:%s", cfg.Host, cfg.Port))
 	if err != nil {
 		return nil, err
 	}
