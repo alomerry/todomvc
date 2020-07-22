@@ -10,18 +10,6 @@ type Todo struct {
 	CreatedAt int64         `bson:"createdAt"`
 	DoneAt    int64         `bson:"doneAt"`
 	Color     string        `bson:"color"`
-	Status    bool          `bson:"status"`
+	Status    int           `bson:"status"`
 	Content   string        `bson:"content"`
-}
-
-func NewProtoTodo(id, userId bson.ObjectId, createdAt, doneAt int64, color string, status bool, content string) *Todo {
-	return &Todo{
-		Id:        id,
-		UserId:    userId,
-		CreatedAt: createdAt,
-		DoneAt:    doneAt,
-		Color:     color,
-		Status:    status,
-		Content:   content,
-	}
 }

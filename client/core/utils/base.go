@@ -9,8 +9,8 @@ import (
 )
 
 type Conf struct {
-	IpHost string
-	Port   string
+	Host string
+	Port string
 }
 
 var (
@@ -23,7 +23,7 @@ func init() {
 }
 
 func GetDialHost() string {
-	return fmt.Sprintf("%s:%s", cfg.IpHost, cfg.Port)
+	return fmt.Sprintf("%s:%s", cfg.Host, cfg.Port)
 }
 
 func GetConnection() *grpc.ClientConn {

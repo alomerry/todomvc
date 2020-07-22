@@ -3,7 +3,6 @@ package service
 import (
 	"golang.org/x/net/context"
 	"gopkg.in/mgo.v2/bson"
-	"strconv"
 	"todomvc/core/dao"
 	proto "todomvc/proto/todo"
 	"todomvc/service/todo/model"
@@ -39,12 +38,8 @@ func makeSelector(todoRequest *proto.GetTodoRequest) []bson.M {
 			},
 		})
 	}
-	if todoRequest.Status != "" {
-		tmp, err := strconv.ParseBool(todoRequest.Status)
-		if err != nil {
-			panic(err)
-		}
-		selector = append(selector, bson.M{"status": tmp})
+	if todoRequest.Status != proto.Status_UNSET {
+		selector = append(selector, bson.M{"status": todoRequest.Status})
 	}
 	if todoRequest.Keyword != "" {
 		selector = append(selector, bson.M{"content": bson.M{
@@ -62,7 +57,7 @@ func conventTodos(todos []model.Todo) []*proto.Todo {
 			CreatedAt: todo.CreatedAt,
 			DoneAt:    todo.DoneAt,
 			Color:     todo.Color,
-			Status:    todo.Status,
+			Status:    proto.Status(todo.Status),
 			Content:   todo.Content,
 		}
 	}

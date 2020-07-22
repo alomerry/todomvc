@@ -1,22 +1,29 @@
 package todo
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/net/context"
+	"strconv"
 	"todomvc/client/core/codes"
-	"todomvc/client/core/utils"
+	connector "todomvc/client/core/utils"
 	"todomvc/client/model/todo"
 	proto "todomvc/proto/todo"
 )
 
 func UpdateTodo(ctx *gin.Context) {
-	connection := utils.GetConnection()
+	connection := connector.GetConnection()
 	defer connection.Close()
 
 	todoClient := proto.NewTodoServiceClient(connection)
-	_, err := todoClient.UpdateTodo(context.Background(), &proto.UpdateTodoRequest{
+
+	fields, err := makeUpdateField(ctx)
+	if err != nil {
+		panic(err)
+	}
+	_, err = todoClient.UpdateTodo(context.Background(), &proto.UpdateTodoRequest{
 		Id:     ctx.Param("id"),
-		Fields: makeUpdateField(ctx),
+		Fields: fields,
 	})
 	if err != nil {
 		panic(err)
@@ -25,18 +32,16 @@ func UpdateTodo(ctx *gin.Context) {
 	ctx.String(codes.OK, "修改成功！")
 }
 
-func makeUpdateField(ctx *gin.Context) map[string]string {
+func makeUpdateField(ctx *gin.Context) (map[string]string, error) {
 	needUpdateFields := make(map[string]string)
 	var todo todo.UpdateTodoRequest
-	if ctx.ShouldBind(&todo) != nil {
-		panic("数据绑定错误")
+	if err := ctx.ShouldBind(&todo); err != nil {
+		return nil, err
 	}
-
-	if todo.Status == "1" {
-		needUpdateFields["status"] = "true"
-	}
-	if todo.Status == "0" {
-		needUpdateFields["status"] = "false"
+	fmt.Println(todo.Status.Value)
+	switch {
+	case todo.Status.Value == 1 || todo.Status.Value == 2:
+		needUpdateFields["status"] = strconv.Itoa(todo.Status.Value)
 	}
 	if todo.Color != "" {
 		needUpdateFields["color"] = todo.Color
@@ -44,5 +49,5 @@ func makeUpdateField(ctx *gin.Context) map[string]string {
 	if todo.Content != "" {
 		needUpdateFields["content"] = todo.Content
 	}
-	return needUpdateFields
+	return needUpdateFields, nil
 }

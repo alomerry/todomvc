@@ -15,8 +15,8 @@ func Login(ctx *gin.Context) {
 	defer connection.Close()
 
 	var user user.LoginRequest
-	if ctx.ShouldBind(&user) != nil {
-		panic("参数绑定错误")
+	if err := ctx.ShouldBind(&user); err != nil {
+		panic(err)
 	}
 
 	userClient := proto.NewUserServiceClient(connection)
@@ -26,10 +26,9 @@ func Login(ctx *gin.Context) {
 		Password: user.Password,
 	})
 	if err != nil {
-		log.Print(err)
+		log.Println(err)
 		ctx.String(codes.NOT_FOUND, "用户名不存在!")
 		return
-	} else {
-		ctx.JSON(codes.OK, reply)
 	}
+	ctx.JSON(codes.OK, reply)
 }

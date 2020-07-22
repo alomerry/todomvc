@@ -19,17 +19,17 @@ func Info(message string) {
 
 func Log(level, method, message string, err error) {
 	if err != nil {
-		log.Printf("[%s] [%s] msg='%s' err='%s'\n", level, method, message, err.Error())
+		log.Printf("[%s] [%s] msg=\"%s\" err=\"%s\"\n", level, method, message, err.Error())
 	} else {
-		log.Printf("[%s] [%s] msg='%s'\n", level, method, message)
+		log.Printf("[%s] [%s] msg=\"%s\"\n", level, method, message)
 	}
 }
 
 func logger(level, message string, err error) {
 	if err != nil {
-		log.Printf("[%s] [%s] msg='%s' err='%s'\n", level, getCaller(2), message, err.Error())
+		log.Printf("[%s] [%s] msg=\"%s\" err=\"%s\"\n", level, getCaller(2), message, err.Error())
 	} else {
-		log.Printf("[%s] [%s] msg='%s'\n", level, getCaller(2), message)
+		log.Printf("[%s] [%s] msg=\"%s\"\n", level, getCaller(2), message)
 	}
 }
 

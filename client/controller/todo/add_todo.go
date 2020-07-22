@@ -4,19 +4,19 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/net/context"
 	"todomvc/client/core/codes"
-	"todomvc/client/core/utils"
+	connector "todomvc/client/core/utils"
 	todo "todomvc/client/model/todo"
-	token "todomvc/core/utils"
+	util "todomvc/core/utils"
 	proto "todomvc/proto/todo"
 )
 
 func AddTodo(ctx *gin.Context) {
-	connection := utils.GetConnection()
+	connection := connector.GetConnection()
 	defer connection.Close()
 
 	var todo todo.AddTodoRequest
-	if ctx.ShouldBind(&todo) != nil {
-		panic("参数绑定出错")
+	if err := ctx.ShouldBind(&todo); err != nil {
+		panic(err)
 	}
 
 	todoClient := proto.NewTodoServiceClient(connection)
@@ -24,7 +24,7 @@ func AddTodo(ctx *gin.Context) {
 	_, err := todoClient.AddTodo(context.Background(), &proto.AddTodoRequest{
 		Color:   todo.Color,
 		Content: todo.Content,
-		UserId:  token.GetJWTClaims(ctx.GetHeader("accessToken"), "jti"),
+		UserId:  util.GetJWTClaims(ctx.GetHeader("accessToken"), "jti"),
 	})
 	if err != nil {
 		panic(err)

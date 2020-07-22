@@ -22,7 +22,7 @@ func toBson(fields map[string]string) bson.M {
 	for k, v := range fields {
 		if k == "status" {
 			var err error
-			res[k], err = strconv.ParseBool(v)
+			res[k], err = strconv.ParseInt(v, 10, 32)
 			if err != nil {
 				panic(err)
 			}

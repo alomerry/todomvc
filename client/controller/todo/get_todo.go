@@ -3,33 +3,33 @@ package todo
 import (
 	"github.com/gin-gonic/gin"
 	"todomvc/client/core/codes"
-	"todomvc/client/core/utils"
+	connector "todomvc/client/core/utils"
 	todo "todomvc/client/model/todo"
-	token "todomvc/core/utils"
+	utils "todomvc/core/utils"
 	proto "todomvc/proto/todo"
 )
 
 func GetTodo(ctx *gin.Context) {
-	connection := utils.GetConnection()
+	connection := connector.GetConnection()
 	defer connection.Close()
 
 	var todoRequest todo.GetTodoRequest
-	if ctx.ShouldBindQuery(&todoRequest) != nil {
-		panic("参数绑定出错")
+	if err := ctx.ShouldBindQuery(&todoRequest); err != nil {
+		panic(err)
 	}
 
 	getTodoClient := proto.NewTodoServiceClient(connection)
 
 	reply, err := getTodoClient.GetTodo(ctx, &proto.GetTodoRequest{
 		SortBy:    todoRequest.SortBy,
-		IsAscend:  todoRequest.IsAscend == 1,
+		IsAscend:  todoRequest.IsAscend.Value,
 		Page:      todoRequest.Page,
 		PageSize:  todoRequest.PageSize,
 		StartedAt: todoRequest.StartAt,
 		EndedAt:   todoRequest.EndAt,
 		Keyword:   todoRequest.Keyword,
-		Status:    todoRequest.Status,
-		UserId:    token.GetJWTClaims(ctx.GetHeader("accessToken"), "jti"),
+		Status:    proto.Status(todoRequest.Status.Value),
+		UserId:    utils.GetJWTClaims(ctx.GetHeader("accessToken"), "jti"),
 	})
 	if err != nil {
 		panic(err)

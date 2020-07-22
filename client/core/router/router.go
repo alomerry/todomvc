@@ -8,13 +8,14 @@ import (
 )
 
 func InitRouter() *gin.Engine {
-	router := gin.Default()
+	router := gin.New()
 	initMiddleware(router)
 	initController(router)
 	return router
 }
 
 func initMiddleware(router *gin.Engine) {
+	router.Use(middleware.Recovery())
 	router.Use(middleware.Authenticate())
 }
 

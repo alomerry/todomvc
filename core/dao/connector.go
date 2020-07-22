@@ -10,7 +10,7 @@ import (
 type Conf struct {
 	UserName string
 	Password string
-	IpHost   string
+	Host     string
 	Port     string
 	DbName   string
 }
@@ -34,7 +34,7 @@ func InitAndAuthenticate() (*mgo.Session, error) {
 }
 
 func initConnection(dbName string) (*mgo.Session, error) {
-	dialInfo, err := mgo.ParseURL(cfg.IpHost + ":" + cfg.Port)
+	dialInfo, err := mgo.ParseURL(cfg.Host + ":" + cfg.Port)
 	if err != nil {
 		return nil, err
 	}

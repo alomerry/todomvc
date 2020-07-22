@@ -4,12 +4,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/net/context"
 	"todomvc/client/core/codes"
-	"todomvc/client/core/utils"
+	connector "todomvc/client/core/utils"
 	"todomvc/proto/todo"
 )
 
 func RemoveTodo(ctx *gin.Context) {
-	connection := utils.GetConnection()
+	connection := connector.GetConnection()
 	defer connection.Close()
 
 	todoClient := todo.NewTodoServiceClient(connection)

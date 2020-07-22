@@ -16,7 +16,7 @@ func (*TodoService) AddTodo(ctx context.Context, request *todo.AddTodoRequest) (
 		"doneAt":    0,
 		"color":     request.Color,
 		"content":   request.Content,
-		"status":    false,
+		"status":    1,
 	})
 	if err != nil {
 		panic(err)

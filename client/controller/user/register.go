@@ -15,8 +15,8 @@ func Register(ctx *gin.Context) {
 	defer connection.Close()
 
 	var user user.RegisterRequest
-	if ctx.ShouldBind(&user) != nil {
-		panic("参数绑定出错")
+	if err := ctx.ShouldBind(&user); err != nil {
+		panic(err)
 	}
 
 	userClient := proto.NewUserServiceClient(connection)
@@ -26,10 +26,9 @@ func Register(ctx *gin.Context) {
 		RepeatPassword: user.RepeatPassword,
 	})
 	if err != nil {
-		log.Print(err)
+		log.Println(err)
 		ctx.String(codes.BAD_REQUEST, "用户已存在!")
 		return
-	} else {
-		ctx.String(codes.OK, replay.AccessToken)
 	}
+	ctx.String(codes.OK, replay.AccessToken)
 }
